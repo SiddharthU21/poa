@@ -1,0 +1,25 @@
+data segment
+string1 db 01h,02h,03h
+ends                  
+
+extra segment
+string2 db ?
+ends
+
+code segment
+start:mov ax,data
+mov ds,ax
+mov ax,extra
+mov es,ax
+lea si,string1
+lea di,string2
+mov cx,03h
+x:mov ah,ds:[si]
+mov es:[di],ah
+inc si
+inc di
+loop x 
+
+int 3
+ends
+end start
