@@ -1,0 +1,117 @@
+def bestFit(blockSize, m, processSize, n):
+    allocation = [-1] * n 
+    for i in range(n):
+        bestIdx = -1
+        for j in range(m):
+            if blockSize[j] >= processSize[i]:
+                if bestIdx == -1: 
+                    bestIdx = j 
+                elif blockSize[bestIdx] > blockSize[j]: 
+                    bestIdx = j
+      
+        if bestIdx != -1:
+              
+            allocation[i] = bestIdx 
+ 
+            blockSize[bestIdx] = 0
+  
+    print("No.\tProcess Size\tBlock no.")
+    for i in range(n):
+        print(i + 1,'\t', processSize[i], 
+                                end = "\t") 
+        if allocation[i] != -1: 
+            print('\t ',allocation[i] + 1) 
+        else:
+            print("\tNot Allocated")
+
+
+def worstFit(blockSize, m, processSize, n):
+    allocation = [-1] * n 
+    for i in range(n):
+        wstIdx = -1
+        for j in range(m):
+            if blockSize[j] >= processSize[i]:
+                if wstIdx == -1:
+                    wstIdx = j
+                elif blockSize[wstIdx] < blockSize[j]:
+                    wstIdx = j
+        if wstIdx != -1:
+              
+            allocation[i] = wstIdx 
+ 
+            blockSize[wstIdx] = 0
+  
+    print("No.\tProcess Size\tBlock no.")
+    for i in range(n):
+        print(i + 1,'\t', processSize[i], 
+                                end = "\t") 
+        if allocation[i] != -1: 
+            print('\t ',allocation[i] + 1) 
+        else:
+            print("\tNot Allocated")
+
+def firstFit(blockSize, m, processSize, n):
+    allocation = [-1] * n 
+    for i in range(n):
+        for j in range(m):
+            if blockSize[j] >= processSize[i]:  
+                allocation[i] = j
+                blockSize[j] = 0
+                break
+    print("No.\tProcess Size\tBlock no.")
+    for i in range(n):
+        print(i + 1,'\t', processSize[i], 
+                                end = "\t") 
+        if allocation[i] != -1: 
+            print('\t ',allocation[i] + 1) 
+        else:
+            print("\tNot Allocated")
+            
+            
+def nextFit(blockSize, m, processSize, n):
+    allocation = [-1] * n 
+    j = 0 
+    t=m-1
+    for i in range(n):
+         while j < m:
+            if blockSize[j] >= processSize[i]:
+                 
+                # allocate block j to p[i] process
+                allocation[i] = j
+                 
+                # Reduce available memory in this block.
+                blockSize[j] = 0
+                 
+                # sets a new end point
+                t = (j - 1) % m
+                break
+            if t == j:
+                # sets a new end point
+                t = (j - 1) % m
+                # breaks the loop after going through all memory block
+                break
+             
+            # mod m will help in traversing the
+            # blocks from starting block after
+            # we reach the end.
+            j = (j + 1) % m
+ 
+            
+  
+    print("No.\tProcess Size\tBlock no.")
+    for i in range(n):
+        print(i + 1,'\t', processSize[i], 
+                                end = "\t") 
+        if allocation[i] != -1: 
+            print('\t ',allocation[i] + 1) 
+        else:
+            print("\tNot Allocated")
+            
+            
+if __name__ == '__main__': 
+    blockSize = [100, 500, 200, 300, 600] 
+    processSize = [212, 417, 112, 426] 
+    m = len(blockSize) 
+    n = len(processSize) 
+  
+    nextFit(blockSize, m, processSize, n)
