@@ -188,66 +188,61 @@ bfs(visited, graph, '5','4')
 
 ----Hill climbing------
 
-import copy
-visited_states = []
-def gn(curr_state,prev_heu,goal_state):
-    global visited_states
-    state = copy.deepcopy(curr_state)
-    for i in range(len(state)):
-        temp = copy.deepcopy(state)
-        if len(temp[i]) > 0:
-            elem = temp[i].pop()
-            for j in range(len(temp)):
-                temp1 = copy.deepcopy(temp)
-                if j != i:
-                    temp1[j] = temp1[j] + [elem]
-                    if (temp1 not in visited_states):
-                        curr_heu=heuristic(temp1,goal_state)
-                        if curr_heu>prev_heu:
-                            child = copy.deepcopy(temp1)
-                            return child
- 
-    return 0
-def heuristic(curr_state,goal_state):
-    goal_=goal_state[3]
-    val=0
-    for i in range(len(curr_state)):
-        check_val=curr_state[i]
-        if len(check_val)>0:
-            for j in range(len(check_val)):
-                if check_val[j]!=goal_[j]:
-                    # val-=1
-                    val-=j
-                else:
-                    # val+=1
-                    val+=j
-    return val
- 
-def sln(init_state,goal_state):
-    global visited_states
-    if (init_state == goal_state):
-        print (goal_state)
-        print("solution found!")
-        return
-    current_state = copy.deepcopy(init_state)
- 
-    while(True):
-        visited_states.append(copy.deepcopy(current_state))
-        print(current_state)
-        prev_heu=heuristic(current_state,goal_state)
-        child = gn(current_state,prev_heu,goal_state)
-        if child==0:
-            print("Final state - ",current_state)
-            return
- 
-        current_state = copy.deepcopy(child)
- 
-def main():
-    global visited_states
-    initial = [[],[],[],['B','C','D','A']]
-    goal = [[],[],[],['A','B','C','D']]
-    sln(initial,goal)
-main()
+SuccList ={ 'A':[['B',3],['C',2]], 'B':[['D',2],['E',3]], 'C':[['F',2],['G',4]], 'D':[['H',1],['I',99]],'F': [['J',1]]
+,'G':[['K',99],['L',3]]}
+Start='C'
+
+Closed = list()
+SUCCESS=True
+FAILURE=False
+
+
+def MOVEGEN(N):
+	New_list=list()
+	if N in SuccList.keys():
+		New_list=SuccList[N]
+	
+	return New_list
+
+def SORT(L):
+	L.sort(key = lambda x: x[1])
+	return L 
+	
+def heu(Node): #Node = ['B',2]--> [Node[0],Node[1]]
+	return Node[1]
+
+def APPEND(L1,L2):
+	New_list=list(L1)+list(L2)
+	return New_list
+
+def Hill_Climbing(Start):
+	global Closed
+	N=Start
+	CHILD = MOVEGEN(N)
+	SORT(CHILD)
+	N=[Start,2]
+	print("\nStart=",N)
+	print("Sorted Child List=",CHILD)
+	newNode=CHILD[(len(CHILD)-1)]
+	CLOSED=[N]
+	
+	while (heu(newNode) > heu(N)):
+		print("\n--------------------------")
+		N= newNode
+		print("N=",N)
+		CLOSED = APPEND(CLOSED,[N])
+		CHILD = MOVEGEN(N[0])
+		SORT(CHILD)
+		print("Sorted Child List=",CHILD)
+		print("CLOSED=",CLOSED)
+		if(CHILD):newNode=CHILD[(len(CHILD)-1)]
+	
+	
+	Closed=CLOSED
+
+	
+#Driver Code
+Hill_Climbing(Start) #call search algorithm
 
 ------PERCEPTRON------
 
@@ -277,60 +272,41 @@ for i in range(epochs):
         print("W", j,  W)
 print(f'Final weight after epoch is {W}')
 
-dfid
+------DFID------
 
-from collections import defaultdict
- 
-class Graph:
- 
-    def __init__(self,vertices):
- 
-        self.V = vertices # Number of vertices
-        self.graph = defaultdict(list)
- 
- 
-    def addEdge(self,u,v):
-        self.graph[u].append(v)
- 
-    def DLS(self,src,target,maxDepth):
- 
-        if src == target : return True
-        if maxDepth <= 0 : return False
- 
-        for i in self.graph[src]:
-                if(self.DLS(i,target,maxDepth-1)):
-                    return True
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D','E'],
+    "C": ['G'],
+    'D': [],
+    'E': ['F'],
+    'G': [],
+    'F':[]
+}
+
+curList = list()
+
+def DFS(currentNode,destination,graph,maxDepth):
+    curList.append(currentNode)  
+    if currentNode==destination:
+        return True
+    if maxDepth<=0:
         return False
-       
-    def IDDFS(self,src, target, maxDepth):
-        for i in range(maxDepth):
-            if (self.DLS(src, target, i)):
-                return True
-        return False
- 
-# Create a graph
-#        0
-#      /   \
-#     1      2
-#    / \     | \
-#   3   4   5   6
- 
-g = Graph (7)
-g.addEdge(0, 1)
-g.addEdge(0, 2)
-g.addEdge(1, 3)
-g.addEdge(1, 4)
-g.addEdge(2, 5)
-g.addEdge(2, 6)
- 
-for i in range(2):
-    target = [5, 3]; maxDepth = [3,2]; src = 0
- 
-    if g.IDDFS(src, target[i], maxDepth[i]) == True:
-        print ("Target "+str(target[i]) +" is reachable from source within max depth of "+str(maxDepth[i]))
-    else :
-        print ("Target "+str(target[i]) +" is NOT reachable from source within max depth of "+str(maxDepth[i]))
- 
+    for node in graph[currentNode]:
+        if DFS(node,destination,graph,maxDepth-1):
+            return True
+    return False
+
+def IDDFS(currentNode,destination,graph,maxDepth):
+    for i in range(maxDepth):
+        if DFS(currentNode,destination,graph,i):
+            return True
+    return False
+
+if not IDDFS('A','E',graph,4):
+    print("Path is not available")
+else:
+    print(curList)
 
 ------A_STAR------
 
