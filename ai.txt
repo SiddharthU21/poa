@@ -1,0 +1,467 @@
+DFS
+graph = {
+  '5' : ['3','7'],
+  '3' : ['2', '4'],
+  '7' : ['8'],
+  '2' : [],
+  '4' : ['8'],
+  '8' : []
+}
+ 
+visited = []
+queue = []
+ 
+closed_list=[]
+ 
+ 
+def dfs(visited, graph, node,goal):
+    path={}
+    path[node]=node
+    root=[]
+    visited.append(node)
+   
+    queue.append(node)
+    print(f"Open List: {queue}\nClosed list: {closed_list} ")
+    print(queue)
+ 
+    while queue:        
+        m = queue.pop()
+       
+        closed_list.append(m)
+        print(f"Open List: {queue}\nClosed list: {closed_list} ")
+   
+       
+   
+        if m==goal:
+           
+            while path[m]!=m:
+                root.append(m)
+                m=path[m]
+            root.append(m)
+            root.reverse()
+            print(f'Path:{root}')
+            return
+           
+     
+ 
+        for neighbour in graph[m]:
+            if neighbour not in visited:
+               
+                queue.append(neighbour)
+                path[neighbour]=m
+           
+       
+    print('Path does not exist')
+ 
+print("Following is the Depth-First Search")
+ 
+dfs(visited, graph, '5','4')
+ 
+
+BFS
+
+graph = {
+  '5' : ['3','7'],
+  '3' : ['2', '4'],
+  '7' : ['8'],
+  '2' : [],
+  '4' : ['8'],
+  '8' : []
+}
+ 
+visited = []
+queue = []
+ 
+closed_list=[]
+path=[]
+ 
+def bfs(visited, graph, node,goal):
+   
+    visited.append(node)
+    path={}
+    path[node]=node
+    root=[]
+    queue.append(node)
+    print(f"Open List: {queue}\nClosed list: {closed_list} ")
+ 
+    while queue:        
+        m = queue.pop(0)
+        closed_list.append(m)
+        print(f"Open List: {queue}\nClosed list: {closed_list} ")
+   
+       
+   
+        if m==goal:
+           
+            while path[m]!=m:
+                root.append(m)
+                m=path[m]
+            root.append(m)
+            root.reverse()
+            print(f'Path:{root}')
+            return
+     
+ 
+        for neighbour in graph[m]:
+            if neighbour not in visited:
+                visited.append(neighbour)
+                queue.append(neighbour)
+                path[neighbour]=m
+           
+       
+    print(f'Path :{path}')
+ 
+ 
+ 
+ 
+print("Following is the Breadth-First Search")
+bfs(visited, graph, '5','4')  
+ 
+
+Hill climbing
+
+import copy
+visited_states = []
+def gn(curr_state,prev_heu,goal_state):
+    global visited_states
+    state = copy.deepcopy(curr_state)
+    for i in range(len(state)):
+        temp = copy.deepcopy(state)
+        if len(temp[i]) > 0:
+            elem = temp[i].pop()
+            for j in range(len(temp)):
+                temp1 = copy.deepcopy(temp)
+                if j != i:
+                    temp1[j] = temp1[j] + [elem]
+                    if (temp1 not in visited_states):
+                        curr_heu=heuristic(temp1,goal_state)
+                        if curr_heu>prev_heu:
+                            child = copy.deepcopy(temp1)
+                            return child
+ 
+    return 0
+def heuristic(curr_state,goal_state):
+    goal_=goal_state[3]
+    val=0
+    for i in range(len(curr_state)):
+        check_val=curr_state[i]
+        if len(check_val)>0:
+            for j in range(len(check_val)):
+                if check_val[j]!=goal_[j]:
+                    # val-=1
+                    val-=j
+                else:
+                    # val+=1
+                    val+=j
+    return val
+ 
+def sln(init_state,goal_state):
+    global visited_states
+    if (init_state == goal_state):
+        print (goal_state)
+        print("solution found!")
+        return
+    current_state = copy.deepcopy(init_state)
+ 
+    while(True):
+        visited_states.append(copy.deepcopy(current_state))
+        print(current_state)
+        prev_heu=heuristic(current_state,goal_state)
+        child = gn(current_state,prev_heu,goal_state)
+        if child==0:
+            print("Final state - ",current_state)
+            return
+ 
+        current_state = copy.deepcopy(child)
+ 
+def main():
+    global visited_states
+    initial = [[],[],[],['B','C','D','A']]
+    goal = [[],[],[],['A','B','C','D']]
+    sln(initial,goal)
+main()
+
+PERCEPTRON
+
+import numpy as np
+X1 = np.array([1, -2, 0, -1])
+X2 = np.array([0, 1.5, -0.5, -1])
+X3 = np.array([-1, 1, 0.5, -1])
+X = [X1, X2, X3]
+W = np.array([1, -1, 0, 0.5])
+ 
+d=[1,-1,-1]
+c=0.1
+epochs=1
+op=0
+for i in range(epochs):
+    for j in range(3):
+        net=np.dot(W,X[j])
+        if net==0:
+            op=0
+        if net>0:
+            op=1
+        if net<0:
+            op=-1
+        error=d[j]-op
+        dw=c*error*X[j]
+        W+=dw
+        print("W", j,  W)
+print(f'Final weight after epoch is {W}')
+
+dfid
+
+from collections import defaultdict
+ 
+class Graph:
+ 
+    def __init__(self,vertices):
+ 
+        self.V = vertices # Number of vertices
+        self.graph = defaultdict(list)
+ 
+ 
+    def addEdge(self,u,v):
+        self.graph[u].append(v)
+ 
+    def DLS(self,src,target,maxDepth):
+ 
+        if src == target : return True
+        if maxDepth <= 0 : return False
+ 
+        for i in self.graph[src]:
+                if(self.DLS(i,target,maxDepth-1)):
+                    return True
+        return False
+       
+    def IDDFS(self,src, target, maxDepth):
+        for i in range(maxDepth):
+            if (self.DLS(src, target, i)):
+                return True
+        return False
+ 
+# Create a graph
+#        0
+#      /   \
+#     1      2
+#    / \     | \
+#   3   4   5   6
+ 
+g = Graph (7)
+g.addEdge(0, 1)
+g.addEdge(0, 2)
+g.addEdge(1, 3)
+g.addEdge(1, 4)
+g.addEdge(2, 5)
+g.addEdge(2, 6)
+ 
+for i in range(2):
+    target = [5, 3]; maxDepth = [3,2]; src = 0
+ 
+    if g.IDDFS(src, target[i], maxDepth[i]) == True:
+        print ("Target "+str(target[i]) +" is reachable from source within max depth of "+str(maxDepth[i]))
+    else :
+        print ("Target "+str(target[i]) +" is NOT reachable from source within max depth of "+str(maxDepth[i]))
+ 
+
+A_STAR
+
+class Graph:
+ 
+ 
+    def __init__(self, adjacency_list):
+        self.adjacency_list = adjacency_list
+ 
+    def get_neighbors(self, v):
+        return self.adjacency_list[v]
+ 
+    def h(self, n):
+        H = {
+            'A': 1,
+            'B': 1,
+            'C': 1,
+            'D': 1        }
+ 
+ 
+        return H[n]
+ 
+    def a_star_algorithm(self, start_node, stop_node):
+   
+        open_list = set([start_node])
+        closed_list = set([])
+ 
+        g = {}
+ 
+        g[start_node] = 0
+ 
+        parents = {}
+        parents[start_node] = start_node
+ 
+        while len(open_list) > 0:
+            n = None
+            print(f'Open list :{open_list} \n closed_list:{closed_list}')
+            for v in open_list:
+                if n == None or g[v] + self.h(v) < g[n] + self.h(n):
+                    n = v
+ 
+            if n == None:
+                print('Path does not exist!')
+                return None
+ 
+     
+            if n == stop_node:
+                open_list.remove(n)
+                closed_list.add(n)
+                print(f'Open list :{open_list} \n closed_list:{closed_list}')
+                reconst_path = []
+ 
+                while parents[n] != n:
+                    reconst_path.append(n)
+                    n = parents[n]
+ 
+                reconst_path.append(start_node)
+ 
+                reconst_path.reverse()
+ 
+                print('Path found: {}'.format(reconst_path))
+                return reconst_path
+ 
+           
+            for (m, weight) in self.get_neighbors(n):
+             
+                if m not in open_list and m not in closed_list:
+                    open_list.add(m)
+                    parents[m] = n
+                    g[m] = g[n] + weight
+ 
+                else:
+                    if g[m] > g[n] + weight:
+                        g[m] = g[n] + weight
+                        parents[m] = n
+ 
+                        if m in closed_list:
+                            closed_list.remove(m)
+                            open_list.add(m)
+ 
+       
+            open_list.remove(n)
+            closed_list.add(n)
+ 
+        print('Path does not exist!')
+        return None
+adjacency_list = {
+    'A': [('B', 1), ('C', 3), ('D', 7)],
+    'B': [('D', 5)],
+    'C': [('D', 12)]
+}
+graph1 = Graph(adjacency_list)
+graph1.a_star_algorithm('A', 'D')
+
+Genetic
+
+from random import randint
+ 
+def selection(li):
+  dec = list(map(lambda x : int(x, 2), li))
+ 
+  fit = list(map(lambda x : x*x, dec))
+ 
+  s = sum(fit)
+  prob = list(map(lambda x : round(x/s, 3), fit))
+ 
+  avg = s/n
+  exe = list(map(lambda x : round(x/avg, 3), fit))
+ 
+  ac = list(map(lambda x : round(x), exe))
+ 
+  return dec, fit, prob, exe, ac
+ 
+def pp(li, ac, n):
+  co = []
+  temp = []
+  index = []
+  for i in range(n):
+    if ac[i] == 1:
+      co.append(li[i])
+    elif ac[i] >= 2:
+      for j in range(ac[i] - 1):
+        temp.append(li[i])
+      co.append(li[i])
+    elif ac[i] == 0 and len(temp) != 0:
+      co.append(temp[0])
+      temp.pop(0)
+    elif ac[i] == 0 and len(temp) == 0:
+      index.append(i)
+  if len(index) != 0 and len(temp) != 0:
+    for i in index:
+      co.insert(i, temp[0])
+      temp.pop(0)
+  elif len(index) != 0 and len(temp) == 0:
+    co.insert(i, li[i])
+  return co
+ 
+def cr(x):
+  s = 0
+  for i in x:
+    if i == '1':
+      s = s + 1
+  return s
+ 
+def crossing(li, n):
+  crossed = []
+  for i in range(0, n, 2):
+    temp1 = li[i]
+    j = i + 1
+    temp2 = li[j]
+    crosspoint = cr(temp1)
+    print("The crosspoint for pair " + str(i) + " is " + str(crosspoint))
+    temp3 = temp1[crosspoint: ]
+    temp4 = temp2[crosspoint: ]
+    temp1 = temp1[0 : crosspoint] + temp4
+    temp2 = temp2[0 : crosspoint] + temp3
+    crossed.append(temp1)
+    crossed.append(temp2)
+  return crossed
+ 
+def mutation(li, n):
+  mut = []
+  for i in li:
+    j = randint(0, n - 1)
+    print("For pair " + str(i) + ", the bit that will be changed is " + str(j))
+    if i[j] == '1':
+      i = i[0 : j] + '0' +i[j + 1 : ]
+      mut.append(i)
+    elif i[j] == '0':
+      i = i[0 : j] + '1' +i[j + 1 : ]
+      mut.append(i)
+  return mut
+ 
+n = int(input("Enter number of samples: "))
+sam = []
+for i in range(n):
+  sam.append(input("Enter gene: "))
+ 
+m = int(input("Enter number of generations to be computed: "))
+crossed = sam.copy()
+for i in range(m):
+  dec, fit, prob, exe, ac = selection(crossed)
+  s = sum(ac)
+  if s < n:
+    maxi = max(ac)
+    k = ac.index(maxi - 1)
+    ac[k] += 1
+  if s > n:
+    maxi = max(ac)
+    k = ac.index(maxi)
+    ac[k] -= 1
+  print("\n----------------------------------------------- GENERATION ", i, "-----------------------------------------------")
+  print("Initial Population\tX Value\t\tFitness Value\tProbability\tExpected Count\t\tActual Count")
+  for j in range(n):
+    print(crossed[j], "\t\t", dec[j], "\t\t", fit[j], "\t", prob[j], "\t\t", exe[j], "\t\t\t", ac[j])
+  co = pp(crossed, ac, n)
+  print("\nSelected Genes for Crossover - \n", co)
+  crossed = crossing(co, n)
+  print("\nCrossover - \n", crossed)
+  crossed = mutation(crossed, n)
+  print("\nMutated - \n", crossed)
+print("\nGENERATION ", (m + 1), " - ", crossed)
