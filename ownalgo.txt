@@ -1,0 +1,70 @@
+import random
+
+
+def create_sbox(key):
+    sbox = []
+    for i in range(256):
+        sbox.append(i)
+    j = 0
+    for i in range(256):
+        j = (j + sbox[i] + key[i % len(key)]) % 256
+        sbox[i], sbox[j] = sbox[j], sbox[i]
+    return sbox
+
+
+def generate_key(length):
+    key = bytearray(random.getrandbits(8) for _ in range(length))
+    return key
+
+
+def fiestel_cipher(data, key, nonce):
+    block_size = len(data) // 2
+    left = bytearray(data[:block_size])
+    right = bytearray(data[block_size:])
+    for i in range(16):
+        sbox = create_sbox(key)
+        round_key = nonce[i % len(nonce)]
+        right_copy = right.copy()
+        right = bytearray(sbox[xor_bytes(right, bytearray([round_key]))[0]] for _ in range(block_size))
+        right = xor_bytes(right, left)
+        left = right_copy
+    return (right + left)
+
+
+def fiestel_decipher(data, key, nonce):
+    block_size = len(data) // 2
+    left = bytearray(data[block_size:])
+    right = bytearray(data[:block_size])
+    for i in range(16):
+        sbox = create_sbox(key)
+        round_key = nonce[(15 - i) % len(nonce)]
+        left_copy = left.copy()
+        left = bytearray(sbox[xor_bytes(left, bytearray([round_key]))[0]] for _ in range(block_size))
+        left = xor_bytes(left, right)
+        right = left_copy
+    return left + right
+
+
+def xor_bytes(a, b):
+    return bytearray([x ^ y for x, y in zip(a, b)])
+
+
+def main():
+    key = generate_key(16)
+    nonce = generate_key(16)
+    print("Key: ", key)
+    print("Nonce: ", nonce)
+    data =input("enter name ").encode()
+    print("Original data: ", data)
+    encrypted_data = data
+    for i in range(12):
+        encrypted_data = fiestel_cipher(encrypted_data, key, nonce)
+    print("Encrypted data: ", encrypted_data.decode('latin-1'))
+    decrypted_data = encrypted_data
+    for i in range(12):
+        decrypted_data = fiestel_decipher(decrypted_data, key, nonce)
+    print("Decrypted data:", decrypted_data.decode('latin-1'))
+
+
+if __name__ == "__main__":
+    main()
